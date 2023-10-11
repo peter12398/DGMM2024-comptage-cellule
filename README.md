@@ -4,6 +4,8 @@ A version more clean is coming.
 
 For now this script is for test only:
 
+0.Install morpholayer: 
+cd DGMM2024_comptage_cellulegit; git clone https://github.com/Jacobiano/morpholayers.git
 1.change the variable DATA_DIR in main.py to the dir containing database_melanocytes_trp1
 2.change the variable ROOT_PATH in main.py to the current root dir ("./DGMM2024_comptage_cellule")
 3.For test: python main.py
