@@ -13,13 +13,15 @@ Download the dataset from https://cloud.minesparis.psl.eu/index.php/s/c50xFQFENF
 ```
 cd DGMM2024_comptage_cellule; git clone https://github.com/Jacobiano/morpholayers.git
 ```
-1.change the variable DATA_DIR in main.py to the dir containing database_melanocytes_trp1  
+1.Change the variable DATA_DIR in main.py to the dir containing database_melanocytes_trp1  
 
-2.change the variable ROOT_PATH in main.py to the current root dir ("./DGMM2024_comptage_cellule")  
+2.Change the variable ROOT_PATH in main.py to the current root dir ("./DGMM2024_comptage_cellule")  
 
 3.For test:   
 
 ```python main.py```  
 
-This will load the pretrained model weight and using the preprocessed inputs in ./DGMM2024_comptage_cellule/best_h_dataset255/input_np (preprocessed using operation opening-closing with structural element size=3)  
+This will load the pretrained model weight and using the preprocessed inputs in ./DGMM2024_comptage_cellule/best_h_dataset255/input_np (preprocessed using operation opening-closing with structural element size=3) 
+
+In the directory ```./DGMM2024_comptage_cellule/visualize_test_only_hmaxima``` you can find the groud truth and detected data samples.
 
