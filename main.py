@@ -28,113 +28,11 @@ import morpholayers.layers as ml
 from tensorflow.keras import layers as kl
 from skimage.morphology import area_opening
 from skimage.morphology import label
-
 print(tf.__version__)
 print('It should be >= 2.0.0.')
 
 
-input_shape = [256,256,1] 
-
-def count(images):
-    """PLot images in one row."""
-    tmp = np.sum(images)
-    #print("sum = :", tmp)
-    return tmp
-    
-@tf.function
-def condition_equal(last,new,image):
-    return tf.math.logical_not(tf.reduce_all(tf.math.equal(last, new)))
-
-def update_dilation(last,new,mask):
-     return [new, geodesic_dilation_step([new, mask]), mask]
-
-@tf.function
-def geodesic_dilation_step(X):
-    """
-    1 step of reconstruction by dilation
-    :X tensor: X[0] is the Mask and X[1] is the Image
-    :param steps: number of steps (by default NUM_ITER_REC)
-    :Example:
-    >>>Lambda(geodesic_dilation_step, name="reconstruction")([Mask,Image])
-    """
-    # perform a geodesic dilation with X[0] as marker, and X[1] as mask
-    return tf.keras.layers.Minimum()([tf.keras.layers.MaxPooling2D(pool_size=(3, 3),strides=(1,1),padding='same')(X[0]),X[1]])
-
-@tf.function
-def geodesic_dilation(X,steps=None):
-    """
-    Full reconstruction by dilation if steps=None, else
-    K steps reconstruction by dilation
-    :X tensor: X[0] is the Mask and X[1] is the Image
-    :param steps: number of steps (by default NUM_ITER_REC)
-    :Example:
-    >>>Lambda(geodesic_dilation, name="reconstruction")([Mask,Image])
-    """
-    rec = X[0]
-    #Full reconstruction is steps==None by dilation, else: partial reconstruction
-    rec = geodesic_dilation_step([rec, X[1]])
-    _, rec,_=tf.while_loop(condition_equal, 
-                            update_dilation, 
-                            [X[0], rec, X[1]],
-                            maximum_iterations=steps)
-    return rec
-
-def reconstruction_dilation(X):
-    """
-    Full geodesic reconstruction by dilation, reaching idempotence
-    :X tensor: X[0] is the Mask and X[1] is the Image
-    :param steps: number of steps (by default NUM_ITER_REC)
-    :Example:
-    >>>Lambda(reconstruction_dilation, name="reconstruction")([Mask,Image])
-    """
-    return geodesic_dilation(X, steps=None)
-
-
-@tf.custom_gradient
-def tfround(x):
-    def grad(dy):
-        return dy
-    return tf.round(x), grad
-
-
-
-class Sampling(tf.keras.layers.Layer):
-    """Sampling Random Uniform."""
-
-    def call(self, inputs):
-        dim = tf.shape(inputs)
-        epsilon = tf.keras.backend.random_uniform(shape=(dim))
-        return epsilon
-  
-class StepsGeodesicDilationLayer(tf.keras.layers.Layer):
-    def __init__(self):
-        super(StepsGeodesicDilationLayer, self).__init__()
-    def call(self, inputs):
-        return ml.geodesic_dilation(inputs,steps=5)
-#Model to Compute Geodesic Reconstruction in steps.
-
-xin=kl.Input(shape=input_shape)
-xMask=kl.Input(shape=input_shape)
-#xout=kl.Lambda(ml.geodesic_dilation, name="reconstruction")([xMask,xin])
-xout=StepsGeodesicDilationLayer()([xMask,xin])
-#xout=ml.geodesic_dilation([xMask,xin])
-modelREC_=tf.keras.Model(inputs=[xin,xMask],outputs=xout)
-modelREC_.summary()
-modelREC_.compile()
-
-    
-# helper function for data visualization    
-def denormalize(x):
-    """Scale image to range 0..1 for correct plot"""
-    x_max = np.percentile(x, 98)
-    x_min = np.percentile(x, 2)    
-    x = (x - x_min) / (x_max - x_min)
-    x = x.clip(0, 1)
-    return x
-    
-    
 NORMALISE01 = False
-
 if not NORMALISE01:
     dir_name = "best_h_dataset255"
     #dir_name = "best_h_dataset255_new"
@@ -146,6 +44,23 @@ ROOT_PATH = "/home/xiaohu/workspace/MINES/DGMM2024_comptage_cellule"
 output_npy_save_path = ROOT_PATH + "/{}/ouput_np".format(dir_name)
 output_h_file_save_path = ROOT_PATH + "/{}/best_h".format(dir_name)
 input_npy_save_path = ROOT_PATH + "/{}/input_np".format(dir_name)
+input_shape = [256,256,1] 
+
+def count(images):
+    """PLot images in one row."""
+    tmp = np.sum(images)
+    #print("sum = :", tmp)
+    return tmp
+    
+
+class Sampling(tf.keras.layers.Layer):
+    """Sampling Random Uniform."""
+
+    def call(self, inputs):
+        dim = tf.shape(inputs)
+        epsilon = tf.keras.backend.random_uniform(shape=(dim))
+        return epsilon
+  
 
 # classes for data loading and preprocessing
 class Dataset:
@@ -478,7 +393,7 @@ class H_maxima_model:
         U=Sampling()(InLayer)
         U=U*c
         M=tf.keras.layers.Minimum()([U,InLayer*c])
-        R= tf.keras.layers.Lambda(geodesic_dilation,name="rec")([M,InLayer*c])
+        R= tf.keras.layers.Lambda(ml.geodesic_dilation,name="rec")([M,InLayer*c])
         #NCC=tf.math.equal(U,R) #This is not differentiable.
         Detection=tf.nn.relu(1-tf.math.abs(U-R)) #Approximation of =
         NCC=tf.math.reduce_sum(Detection,axis=[1,2,3])
