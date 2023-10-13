@@ -17,7 +17,7 @@ cd DGMM2024_comptage_cellule; git clone https://github.com/Jacobiano/morpholayer
 
 2.Change the variable ROOT_PATH in main.py to the current root dir ("./DGMM2024_comptage_cellule")  
 
-3.For test:   
+3.For train and test:   
 
 ```python main.py```  
 

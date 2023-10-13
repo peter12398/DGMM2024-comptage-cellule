@@ -1,0 +1,1 @@
+python main.py --mode train --DATA_DIR /home/xiaohu/workspace/MINES/segmentation_models_400epochs_copy/examples/data_/database_melanocytes_trp1/
