@@ -1,6 +1,6 @@
 # %%
 import os
-#os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 import cv2
 import keras
 import numpy as np
@@ -28,6 +28,7 @@ import morpholayers.layers as ml
 from tensorflow.keras import layers as kl
 from skimage.morphology import area_opening
 from skimage.morphology import label
+import ipdb
 print(tf.__version__)
 print('It should be >= 2.0.0.')
 
@@ -130,7 +131,8 @@ class Dataset:
         if mask.max()>0:
             mask = mask / mask.max()
         #mask = np.array(scipy.ndimage.morphology.binary_dilation(mask, iterations = 8),dtype=np.uint8)
-      
+        #ipdb.set_trace()
+
         return image, mask, rec_, image_name ,gt_h, ntruth, imMax_best, imCol #, gt_threshold
 
         
@@ -345,7 +347,7 @@ class H_maxima_model:
         self.lr = lr
         self.metrics = metrics
         #self.nn.compile(loss=self.loss,loss_weights = self.loss_weights, optimizer=tf.keras.optimizers.Adam(learning_rate=self.lr), metrics = self.metrics)
-        self.nn.compile(loss=self.loss,loss_weights = self.loss_weights, optimizer=tf.keras.optimizers.RMSprop(lr=self.lr, rho=0.9, epsilon=None), metrics = self.metrics)
+        self.nn.compile(loss=self.loss,loss_weights = self.loss_weights, optimizer=tf.keras.optimizers.RMSprop(lr=self.lr, rho=0.9), metrics = self.metrics)
         self.resume = resume
         
         if self.resume:
@@ -430,6 +432,7 @@ class H_maxima_model:
             #ModelCheckpoint('best_model.h5', monitor='loss',verbose=1, save_best_only=True)
         ]
         #Training the model
+        #ipdb.set_trace()
         self.history = self.nn.fit(
                 self.train_dataloader, 
                 steps_per_epoch=len(self.train_dataloader), 
@@ -599,12 +602,10 @@ class H_maxima_model:
         print("average relative error =:", np.average(average_relative_error_list))
         print("total relative error =:", np.sum(count_err_diff_list)/ np.sum(count_err_nomerator_list))
 
-                
 
-# %%
 
 if __name__ == "__main__":
-    import ipdb
+    
     
     IMAGE_SAVE_PATH = ROOT_PATH + "/visualize_main"
     ROT_PATH = ROOT_PATH #"/home/xiaohu/PythonProject/DIMA_comtage_cellule"
@@ -631,12 +632,6 @@ if __name__ == "__main__":
     dataset = Dataset(x_train_dir, y_train_dir)
 
 
-
-
-    # %%
-    #!git clone https://github.com/Jacobiano/morpholayers.git
-
-    # %%
     BATCH_SIZE=16
     
     ids_images_train = os.listdir(x_train_dir)
@@ -700,5 +695,5 @@ if __name__ == "__main__":
                                     IMAGE_SAVE_PATH = IMAGE_SAVE_PATH,
                                     MODE = "only_hmaximalayer",
                                     resume = RESUME)
-    #h_maxima_model.train()
+    h_maxima_model.train()
     h_maxima_model.test()
