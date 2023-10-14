@@ -29,7 +29,7 @@ This will load the pretrained model weight and using the preprocessed inputs.
 
 After testing finished, in the directory ```./DGMM2024_comptage_cellule/visualize_test_only_hmaxima``` you can find the groud truth and detected data samples.
 
-## Train from scratch and save the model
+## 4.Train from scratch and save the model
 
 After changing --DATA_DIR in train.sh to the dir containing database_melanocytes_trp1 :
 
@@ -37,7 +37,7 @@ After changing --DATA_DIR in train.sh to the dir containing database_melanocytes
 
 This will train the CNN using preprocessed inputs from set1 in ./DGMM2024_comptage_cellule/, the best model weight with lowest validation error will be saved for each epoch.
 
-    If you find this code useful in your research, please consider citing:
+If you find this code useful in your research, please consider citing:
 
     @inproceedings{VelascoBMVC2022,
     Author = {Velasco-Forero, S. and Rhim, A. and Angulo, J.},
