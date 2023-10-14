@@ -37,3 +37,22 @@ After changing --DATA_DIR in train.sh to the dir containing database_melanocytes
 
 This will train the CNN using preprocessed inputs from set1 in ./DGMM2024_comptage_cellule/, the best model weight with lowest validation error will be saved for each epoch.
 
+If you find this code useful in your research, please consider citing:
+
+@inproceedings{VelascoBMVC2022,
+Author = {Velasco-Forero, S. and Rhim, A. and Angulo, J.},
+Title = {Fixed Point Layers for Geodesic Morphological Operations},
+Booktitle  = {British Machine Vision Conference (BMVC)},
+Year = {2022}
+}
+
+
+@article{VelascoSIAM2022,
+author = {Velasco-Forero, Santiago and Pag\`{e}s, R. and Angulo, Jesus},
+title = {Learnable Empirical Mode Decomposition based on Mathematical Morphology},
+journal = {SIAM Journal on Imaging Sciences},
+volume = {15},
+number = {1},
+pages = {23-44},
+year = {2022},
+}
