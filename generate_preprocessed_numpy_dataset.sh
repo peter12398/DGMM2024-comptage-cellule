@@ -1,0 +1,1 @@
+python generate_best_h_dataset_opening_closing.py --DATA_DIR /home/xiaohu/workspace/MINES/segmentation_models_400epochs_copy/examples/data_/database_melanocytes_trp1/

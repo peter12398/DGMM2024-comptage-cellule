@@ -12,8 +12,15 @@ import tensorflow as tf
 import tensorflow.keras.models as km
 import tensorflow.keras.layers as kl
 input_shape = [256,256,1] 
+import argparse
 # Functions and algorithm for the detection of cells as h-maxima
 # Assuming 8 bits grayscale images
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--ROOT_PATH", default=".", type=str, help="path to the root dir")
+parser.add_argument("--DATA_DIR", default="/home/xiaohu/workspace/MINES/segmentation_models_400epochs_copy/examples/data_/database_melanocytes_trp1/", type=str, help="path to TRP1 dataset")
+args = parser.parse_args()
 
 # Geodesic dilation
 def geoDil(imMark, imMask, se):
@@ -115,12 +122,16 @@ def detectCells(im, h, b, MAX_0XH = True, NORMALISE01 = True):
 def generate_best_h_dataset(input_npy_save_path, output_image_save_path , output_h_file_save_path, dataset_dir, output_npy_save_path, set_name = 'set1', NORMALISE01=False, MAX_0XH = True):
     images_dir = dataset_dir + set_name + '/images/'
     labels_dir = dataset_dir + set_name + '/labels/'
+    print("images_dir: {}".format(images_dir))
+    print("labels_dir: {}".format(labels_dir))
     best_h_dict ={}
     image_dirs = glob.glob(images_dir + '*.png')
+    print("num of datas: {}".format(len(image_dirs)))
     for i in tqdm(range(len(image_dirs))):
         #i = 0 #index of image
         #if i == 65:
         imname = 'image_'+str(i)
+        print("processing {}".format(imname))
 
         imColLarge = io.imread(images_dir+imname+'.png')
         h,w = imColLarge.shape[0], imColLarge.shape[1]
@@ -262,13 +273,13 @@ if __name__ == "__main__":
     MAX_0XH = True
     
     if not NORMALISE01:
-        dir_name = "best_h_dataset255_new"
+        dir_name = "best_h_dataset255"
         #dir_name = "best_h_dataset255_se2"
         #dir_name = "best_h_dataset255_se4"
     else:
         dir_name = "best_h_dataset01"
         
-    ROOT_PATH = "/home/xiaohu/PythonProject/DIMA_comtage_cellule"
+    ROOT_PATH = args.ROOT_PATH #"."
     output_image_save_path = ROOT_PATH + "/{}/ouput_images".format(dir_name)
     output_npy_save_path = ROOT_PATH + "/{}/ouput_np".format(dir_name)
     output_h_file_save_path = ROOT_PATH + "/{}/best_h".format(dir_name)
@@ -277,16 +288,18 @@ if __name__ == "__main__":
     #images_dir = '/home/xiaohu/PythonProject/MINES/segmentation_models_400epochs/examples/data_/database_melanocytes_trp1/set1/images/'
     #labels_dir = '../../database_melanocytes_trp1/set1/labels/'
     #labels_dir = '/home/xiaohu/PythonProject/MINES/segmentation_models_400epochs/examples/data_/database_melanocytes_trp1/set1/labels/'
-    dataset_dir = '/home/xiaohu/PythonProject/MINES/segmentation_models_400epochs/examples/data_/database_melanocytes_trp1/'
-    set_name = 'set1'
+    dataset_dir = args.DATA_DIR #'/home/xiaohu/PythonProject/MINES/segmentation_models_400epochs/examples/data_/database_melanocytes_trp1/'
+    print("DATA_DIR used: {}".format(dataset_dir))
     
-    best_h_dict = generate_best_h_dataset(input_npy_save_path = input_npy_save_path, output_image_save_path = output_image_save_path, output_h_file_save_path= output_h_file_save_path, dataset_dir = dataset_dir, output_npy_save_path = output_npy_save_path , set_name = set_name, NORMALISE01 = NORMALISE01, MAX_0XH = MAX_0XH)
-    
-    print("best_h_dict:", best_h_dict)
-    jsObj = json.dumps(best_h_dict)  
-    if not os.path.exists(output_h_file_save_path):
-        os.makedirs(output_h_file_save_path)
-    fileObject = open(output_h_file_save_path + '/best_h_opening_closing_{}.json'.format(set_name)  , 'w')
-    fileObject.write(jsObj)  
-    fileObject.close()  
-    print("best_h_opening_closing_{}.json wrote".format(set_name))
+    for set_name in ['set1', 'set2']:
+        print("processing {}".format(set_name))
+        best_h_dict = generate_best_h_dataset(input_npy_save_path = input_npy_save_path, output_image_save_path = output_image_save_path, output_h_file_save_path= output_h_file_save_path, dataset_dir = dataset_dir, output_npy_save_path = output_npy_save_path , set_name = set_name, NORMALISE01 = NORMALISE01, MAX_0XH = MAX_0XH)
+        
+        print("best_h_dict:", best_h_dict)
+        jsObj = json.dumps(best_h_dict)  
+        if not os.path.exists(output_h_file_save_path):
+            os.makedirs(output_h_file_save_path)
+        fileObject = open(output_h_file_save_path + '/best_h_opening_closing_{}.json'.format(set_name)  , 'w')
+        fileObject.write(jsObj)  
+        fileObject.close()  
+        print("best_h_opening_closing_{}.json wrote".format(set_name))
