@@ -1,6 +1,5 @@
 # DGMM2024_comptage_cellule
 code for DGMM2024: Counting melanocytes with trainable $h$-maxima and connected components counting layers
-A version more clean is coming.
 
 ## 0.Download dataset
 Download the dataset from https://cloud.minesparis.psl.eu/index.php/s/c50xFQFENFZ6I5h
