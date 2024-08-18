@@ -37,6 +37,7 @@ After changing --DATA_DIR in train.sh to the dir containing database_melanocytes
 This will train the CNN using preprocessed inputs from set1 in ./DGMM2024_comptage_cellule/, the best model weight with lowest validation error will be saved for each epoch.
 
 If you find this code useful in your research, please consider citing:
+```
     @inproceedings{liu2024counting,
       title={Counting melanocytes with trainable h-maxima and connected component layers},
       author={Liu, Xiaohu and Blusseau, Samy and Velasco-Forero, Santiago},
@@ -62,3 +63,4 @@ If you find this code useful in your research, please consider citing:
     pages = {23-44},
     year = {2022},
     }
+```
